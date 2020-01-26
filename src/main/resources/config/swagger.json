@@ -1,0 +1,292 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "This is a money transfer support API.  You can find out more about it on the project  at [https://github.com/amaksakov/lightweight_transactions](https://github.com/amaksakov/lightweight_transactions)",
+    "version" : "0.0.1",
+    "title" : "Lightsaber - Lightweight Transactions Processing Engine",
+    "termsOfService" : "",
+    "contact" : {
+      "email" : "amaksakov@gmail.com"
+    },
+    "license" : {
+      "name" : "MIT",
+      "url" : "https://github.com/amaksakov/lightweight_transactions/blob/master/LICENSE"
+    }
+  },
+  "basePath" : "/v1",
+  "tags" : [ {
+    "name" : "transactions",
+    "description" : "Transactions support"
+  }, {
+    "name" : "accounts",
+    "description" : "Account management support"
+  } ],
+  "schemes" : [ "https", "http" ],
+  "paths" : {
+    "/account/get_balance" : {
+      "post" : {
+        "tags" : [ "transactions" ],
+        "summary" : "Gets the account information, including current balance",
+        "description" : "Gets the account information, including current balance",
+        "operationId" : "getAccountBalance",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "User id and account id information",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/AccountId"
+          }
+        } ],
+        "responses" : {
+          "405" : {
+            "description" : "Invalid input"
+          }
+        },
+        "x-contentType" : "application/json",
+        "x-accepts" : "application/json"
+      }
+    },
+    "/account/create" : {
+      "post" : {
+        "tags" : [ "accounts" ],
+        "summary" : "Creates new account",
+        "description" : "Creates new account",
+        "operationId" : "createAccount",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "User id and account id information",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/AccountRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation - account created",
+            "schema" : {
+              "$ref" : "#/definitions/AccountId"
+            }
+          },
+          "405" : {
+            "description" : "Invalid input"
+          }
+        },
+        "x-contentType" : "application/json",
+        "x-accepts" : "application/json"
+      }
+    },
+    "/account/money_transfer" : {
+      "get" : {
+        "tags" : [ "transactions" ],
+        "summary" : "Transfers money from one account to another",
+        "description" : "Transfers money from one account to another",
+        "operationId" : "moneyTransfer",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Money transfer command - contains to and from account ids and transfer amount",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/TransferCommand"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/TransferResult"
+            }
+          },
+          "400" : {
+            "description" : "Invalid command"
+          },
+          "500" : {
+            "$ref" : "#/definitions/TransferError"
+          }
+        },
+        "x-contentType" : "application/json",
+        "x-accepts" : "application/json"
+      }
+    },
+    "/account/charge_balance" : {
+      "get" : {
+        "tags" : [ "transactions" ],
+        "summary" : "Transfers money from/to account from external sources, like cash at ATM or counter",
+        "description" : "Charges account/ withdraws money from account",
+        "operationId" : "accountCharge",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Money transfer command - contains account id and transfer amount",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ChargeCommand"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/TransferResult"
+            }
+          },
+          "400" : {
+            "description" : "Invalid command"
+          },
+          "500" : {
+            "$ref" : "#/definitions/TransferError"
+          }
+        },
+        "x-contentType" : "application/json",
+        "x-accepts" : "application/json"
+      }
+    }
+  },
+  "definitions" : {
+    "AccountId" : {
+      "type" : "object",
+      "properties" : {
+        "userId" : {
+          "type" : "string"
+        },
+        "accountId" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "example" : {
+        "accountId" : 0,
+        "userId" : "userId"
+      }
+    },
+    "AccountRequest" : {
+      "type" : "object",
+      "properties" : {
+        "userId" : {
+          "type" : "string"
+        },
+        "accountOrdinal" : {
+          "type" : "integer",
+          "format" : "int8"
+        }
+      },
+      "example" : {
+        "userId" : "userId",
+        "accountOrdinal" : 0
+      }
+    },
+    "AccountBalance" : {
+      "type" : "object",
+      "properties" : {
+        "account" : {
+          "$ref" : "#/definitions/AccountId"
+        },
+        "balance" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "account balance in cents"
+        }
+      },
+      "example" : {
+        "balance" : 0,
+        "account" : {
+          "accountId" : 0,
+          "userId" : "userId"
+        }
+      }
+    },
+    "ChargeCommand" : {
+      "type" : "object",
+      "properties" : {
+        "account" : {
+          "$ref" : "#/definitions/AccountId"
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Charge/withdraw amount in cents"
+        }
+      },
+      "example" : {
+        "amount" : 0,
+        "account" : {
+          "accountId" : 0,
+          "userId" : "userId"
+        }
+      }
+    },
+    "TransferCommand" : {
+      "type" : "object",
+      "properties" : {
+        "from" : {
+          "$ref" : "#/definitions/AccountId"
+        },
+        "to" : {
+          "$ref" : "#/definitions/AccountId"
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Charge/withdraw amount in cents"
+        }
+      },
+      "example" : {
+        "amount" : 0,
+        "from" : {
+          "accountId" : 0,
+          "userId" : "userId"
+        },
+        "to" : {
+          "accountId" : 0,
+          "userId" : "userId"
+        }
+      }
+    },
+    "TransferError" : {
+      "type" : "object",
+      "properties" : {
+        "reason" : {
+          "type" : "string",
+          "description" : "transfer error code",
+          "enum" : [ "cancelled", "insufficient_funds", "network" ]
+        },
+        "transactionId" : {
+          "type" : "string",
+          "description" : "Transaction IDfor tracking purposes"
+        }
+      }
+    },
+    "TransferResult" : {
+      "type" : "object",
+      "properties" : {
+        "newBalance" : {
+          "$ref" : "#/definitions/AccountBalance"
+        },
+        "transactionId" : {
+          "type" : "string",
+          "description" : "Transaction ID for tracking purposes"
+        }
+      },
+      "example" : {
+        "newBalance" : {
+          "balance" : 0,
+          "account" : {
+            "accountId" : 0,
+            "userId" : "userId"
+          }
+        },
+        "transactionId" : "transactionId"
+      }
+    }
+  }
+}

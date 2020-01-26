@@ -11,6 +11,8 @@ Project is build using maven
 
 ### Running the endpoint
 
+*mvn install* builds an executable jar which will run web container which binds to port 8747
+
 ## Transaction model
 
 Current implementation support in-memory storage 
