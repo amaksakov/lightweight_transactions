@@ -16,6 +16,17 @@ Project is build using maven
 ## Transaction model
 
 Current implementation support in-memory storage 
-and row-based locking modek
+and one operation at a time
+
+## Next steps
+
+1. Row-based locking
+2. Asynchronous http response model
+3. Making API instrumented - i.e. adding dropwizard or other metrics
+4. Load test to see the transaction speed and limits for the number of simultaneous requests
+5. Specially designed test to verify for the deadlock situation
+
+
+
 
 

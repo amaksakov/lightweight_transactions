@@ -1,5 +1,7 @@
 package com.amaksakov.lightsaber.api.server;
 
+import com.amaksakov.lightsaber.context.ContextProvider;
+import com.amaksakov.lightsaber.context.ContextProviderInterface;
 import com.amaksakov.lightsaber.database.AccountHandler;
 import com.amaksakov.lightsaber.database.SynchronizedAccountHandler;
 import com.amaksakov.lightsaber.database.validation.DebitAccountValidator;
@@ -16,7 +18,15 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 
 public class AccountBalanceHandler implements HttpHandler {
-    AccountHandler accountHandler = SynchronizedAccountHandler.getInstance();
+
+    private final ContextProviderInterface contextProvider;
+    AccountHandler accountHandler;
+
+    public AccountBalanceHandler (ContextProviderInterface contextProvider) {
+        this.contextProvider = contextProvider;
+        accountHandler = contextProvider.getAccountHandler();
+    }
+
 
     ObjectMapper objectMapper = ObjectMapperConfiguration.getObjectMapper();
     @Override

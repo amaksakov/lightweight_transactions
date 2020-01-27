@@ -12,6 +12,6 @@ public class DebitAccountValidator implements Validator {
 
     @Override
     public boolean validate(ChargeCommand chargeCommand, long accountBalance) {
-        return (accountBalance - chargeCommand.getAmount() >= 0);
+        return (accountBalance + chargeCommand.getAmount() >= 0);
     }
 }

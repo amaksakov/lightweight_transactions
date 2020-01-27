@@ -1,6 +1,7 @@
 package com.amaksakov.lightsaber.database;
 
 import com.amaksakov.lightsaber.context.ContextProvider;
+import com.amaksakov.lightsaber.context.ContextProviderInterface;
 import com.amaksakov.lightsaber.database.validation.Validator;
 import com.amaksakov.lightsaber.model.*;
 
@@ -15,8 +16,7 @@ public class SynchronizedAccountHandler implements AccountHandler {
 
     private AccountDataSource accountDataSource = InMemoryDatasource.getInstance();
 
-    public static SynchronizedAccountHandler getInstance() {
-        ContextProvider contextProvider = ContextProvider.getInstance();
+    public static SynchronizedAccountHandler getInstance(ContextProviderInterface contextProvider) {
         Validator validator = contextProvider.getValidator();
         if (instance == null) {
             synchronized (SynchronizedAccountHandler.class) {

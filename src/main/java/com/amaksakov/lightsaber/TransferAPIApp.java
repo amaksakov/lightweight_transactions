@@ -3,7 +3,10 @@ package com.amaksakov.lightsaber;
 import com.amaksakov.lightsaber.api.client.AccountsApi;
 import com.amaksakov.lightsaber.api.server.AccountBalanceHandler;
 import com.amaksakov.lightsaber.api.server.AccountCreationHandler;
+import com.amaksakov.lightsaber.api.server.BalanceChargingHandler;
 import com.amaksakov.lightsaber.api.server.MoneyTransferHandler;
+import com.amaksakov.lightsaber.context.ContextProvider;
+import com.amaksakov.lightsaber.context.ContextProviderInterface;
 import com.networknt.server.HandlerProvider;
 import com.sun.net.httpserver.HttpServer;
 
@@ -20,13 +23,15 @@ public class TransferAPIApp {
 
     public static void main(String[] args)  {
 
-        AccountBalanceHandler accountBalanceHandler = new AccountBalanceHandler();
+        ContextProviderInterface contextProvider = ContextProvider.getInstance();
 
-        MoneyTransferHandler transferHandler = new MoneyTransferHandler();
+        AccountBalanceHandler accountBalanceHandler = new AccountBalanceHandler(contextProvider);
 
-        AccountCreationHandler accountCreationHandler = new AccountCreationHandler();
+        BalanceChargingHandler balanceChargingHandler = new BalanceChargingHandler(contextProvider);
 
-        MoneyTransferHandler moneyTransferHandler = new MoneyTransferHandler();
+        AccountCreationHandler accountCreationHandler = new AccountCreationHandler(contextProvider);
+
+        MoneyTransferHandler moneyTransferHandler = new MoneyTransferHandler(contextProvider);
 
         HttpHandler sampleProvider = new HttpHandler() {
             @Override
@@ -38,9 +43,9 @@ public class TransferAPIApp {
                 if (path.equals("/v1/account/get_balance") && method.equals(HttpString.tryFromString("GET"))) {
                     accountBalanceHandler.handleRequest(exchange);
                 } else if (path.equals("/v1/account/money_transfer") && method.equals(HttpString.tryFromString("GET"))) {
-                    transferHandler.handleRequest(exchange);
+                    moneyTransferHandler.handleRequest(exchange);
                 } else if (path.equals("/v1/account/charge_balance") && method.equals(HttpString.tryFromString("GET"))) {
-                    accountBalanceHandler.handleRequest(exchange);
+                    balanceChargingHandler.handleRequest(exchange);
                 } else if (path.equals("/v1/account/create") && method.equals(HttpString.tryFromString("GET"))) {
                     accountCreationHandler.handleRequest(exchange);
                 }

@@ -1,18 +1,20 @@
-package com.amaksakov.lightsaber.context;
+package com.amaksakov.lightsaber.api.utils;
 
+import com.amaksakov.lightsaber.context.ContextProviderInterface;
 import com.amaksakov.lightsaber.database.AccountHandler;
 import com.amaksakov.lightsaber.database.SynchronizedAccountHandler;
 import com.amaksakov.lightsaber.database.validation.DebitAccountValidator;
 import com.amaksakov.lightsaber.database.validation.Validator;
 
-public class ContextProvider implements ContextProviderInterface {
-    private static ContextProvider instance = null;
 
-    public static ContextProvider getInstance() {
+public class SlowValidatorContextProvider implements ContextProviderInterface {
+    private static SlowValidatorContextProvider instance = null;
+
+    public static SlowValidatorContextProvider getInstance() {
         if (instance == null) {
             synchronized (SynchronizedAccountHandler.class) {
                 if (instance == null) {
-                    instance = new ContextProvider();
+                    instance = new SlowValidatorContextProvider();
                 }
             }
         }
@@ -21,7 +23,7 @@ public class ContextProvider implements ContextProviderInterface {
 
     @Override
     public Validator getValidator() {
-        return new DebitAccountValidator();
+        return new SlowAccountValidator();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.amaksakov.lightsaber.api.server;
 
+import com.amaksakov.lightsaber.context.ContextProviderInterface;
 import com.amaksakov.lightsaber.database.AccountHandler;
 import com.amaksakov.lightsaber.database.SynchronizedAccountHandler;
 import com.amaksakov.lightsaber.database.validation.DebitAccountValidator;
@@ -13,7 +14,13 @@ import io.undertow.util.Headers;
 
 public class MoneyTransferHandler implements HttpHandler {
 
-    AccountHandler accountHandler = SynchronizedAccountHandler.getInstance();
+    private final ContextProviderInterface contextProvider;
+    AccountHandler accountHandler;
+
+    public MoneyTransferHandler (ContextProviderInterface contextProvider) {
+        this.contextProvider = contextProvider;
+        accountHandler = contextProvider.getAccountHandler();
+    }
 
     ObjectMapper objectMapper = ObjectMapperConfiguration.getObjectMapper();
     @Override
