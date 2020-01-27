@@ -11,6 +11,7 @@ import com.amaksakov.lightsaber.model.AccountId;
 import com.amaksakov.lightsaber.model.TransferCommand;
 import com.amaksakov.lightsaber.model.TransferResult;
 import com.amaksakov.lightsaber.utils.ObjectMapperConfiguration;
+import com.amaksakov.lightsaber.utils.UndertowRequestBodyReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.util.ObjectMapperFactory;
 import io.undertow.server.HttpHandler;
@@ -42,6 +43,14 @@ public class AccountBalanceHandler implements HttpHandler {
             String payload = objectMapper.writeValueAsString(balance);
             exchange.getResponseSender().send(payload);
 
+        } else if (exchange.getRequestMethod().equalToString("POST")) {
+            String requestBody = UndertowRequestBodyReader.readBody(exchange);
+            AccountId accountId = objectMapper.readValue(requestBody, AccountId.class);
+            balance = handleLogic(accountId);
+            exchange.getResponseHeaders().put(
+                    Headers.CONTENT_TYPE, "application/json");
+            String payload = objectMapper.writeValueAsString(balance);
+            exchange.getResponseSender().send(payload);
         }
 
 

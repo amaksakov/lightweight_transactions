@@ -7,6 +7,7 @@ import com.amaksakov.lightsaber.model.AccountBalance;
 import com.amaksakov.lightsaber.model.AccountId;
 import com.amaksakov.lightsaber.model.AccountRequest;
 import com.amaksakov.lightsaber.utils.ObjectMapperConfiguration;
+import com.amaksakov.lightsaber.utils.UndertowRequestBodyReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -29,6 +30,15 @@ public class AccountCreationHandler implements HttpHandler {
             String userId = exchange.getQueryParameters().get("userId").getFirst();
             String accountOrdinal = exchange.getQueryParameters().get("accountOrdinal").getFirst();
             AccountRequest accountRequest = new AccountRequest().userId(userId).accountOrdinal(Integer.valueOf(accountOrdinal));
+            account = handleLogic(accountRequest);
+            exchange.getResponseHeaders().put(
+                    Headers.CONTENT_TYPE, "application/json");
+            String payload = objectMapper.writeValueAsString(account);
+            exchange.getResponseSender().send(payload);
+
+        } else if (exchange.getRequestMethod().equalToString("POST")) {
+            String requestBody = UndertowRequestBodyReader.readBody(exchange);
+            AccountRequest accountRequest = objectMapper.readValue(requestBody, AccountRequest.class);
             account = handleLogic(accountRequest);
             exchange.getResponseHeaders().put(
                     Headers.CONTENT_TYPE, "application/json");

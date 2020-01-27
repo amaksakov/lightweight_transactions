@@ -363,7 +363,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.networknt.server.Server</mainClass>
+                            <mainClass>com.amaksakov.lightsaber.TransferAPIApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

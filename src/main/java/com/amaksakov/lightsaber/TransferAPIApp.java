@@ -40,19 +40,18 @@ public class TransferAPIApp {
                 String path = exchange.getRequestPath();
                 HttpString method = exchange.getRequestMethod();
 
-                if (path.equals("/v1/account/get_balance") && method.equals(HttpString.tryFromString("GET"))) {
+                if (path.equals("/v1/account/get_balance") &&
+                        (method.equals(HttpString.tryFromString("GET")) || method.equals(HttpString.tryFromString("POST")))) {
                     accountBalanceHandler.handleRequest(exchange);
-                } else if (path.equals("/v1/account/money_transfer") && method.equals(HttpString.tryFromString("GET"))) {
+                } else if (path.equals("/v1/account/money_transfer") &&
+                        (method.equals(HttpString.tryFromString("GET")) || method.equals(HttpString.tryFromString("POST")))) {
                     moneyTransferHandler.handleRequest(exchange);
-                } else if (path.equals("/v1/account/charge_balance") && method.equals(HttpString.tryFromString("GET"))) {
+                } else if (path.equals("/v1/account/charge_balance") &&
+                        (method.equals(HttpString.tryFromString("GET")) || method.equals(HttpString.tryFromString("POST")))) {
                     balanceChargingHandler.handleRequest(exchange);
-                } else if (path.equals("/v1/account/create") && method.equals(HttpString.tryFromString("GET"))) {
+                } else if (path.equals("/v1/account/create") &&
+                        (method.equals(HttpString.tryFromString("GET")) || method.equals(HttpString.tryFromString("POST")))) {
                     accountCreationHandler.handleRequest(exchange);
-                }
-                else{
-                    exchange.getResponseHeaders().put(
-                            Headers.CONTENT_TYPE, "text/plain");
-                    exchange.getResponseSender().send("Hello Alex");
                 }
             }
         };

@@ -7,6 +7,7 @@ import com.amaksakov.lightsaber.database.validation.DebitAccountValidator;
 import com.amaksakov.lightsaber.database.validation.Validator;
 import com.amaksakov.lightsaber.model.*;
 import com.amaksakov.lightsaber.utils.ObjectMapperConfiguration;
+import com.amaksakov.lightsaber.utils.UndertowRequestBodyReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -38,6 +39,25 @@ public class MoneyTransferHandler implements HttpHandler {
             String amount = exchange.getQueryParameters().get("amount").getFirst();
 
             TransferCommand transferCommand = new TransferCommand().from(fromAccount).to(toAccount).amount(Long.valueOf(amount));
+
+            if (transferCommand.getAmount() > 0) {
+                result = handleLogic(transferCommand);
+            } else {
+                exchange.getResponseHeaders().put(
+                        Headers.CONTENT_TYPE, "application/json");
+                String payload = objectMapper.writeValueAsString(new TransferError().reason(TransferError.ReasonEnum.INCORRECT_AMOUNT));
+                exchange.getResponseSender().send(payload);
+                return;
+            }
+            exchange.getResponseHeaders().put(
+                    Headers.CONTENT_TYPE, "application/json");
+            String payload = objectMapper.writeValueAsString(result);
+            exchange.getResponseSender().send(payload);
+
+        }  else if (exchange.getRequestMethod().equalToString("POST")) {
+            String requestBody = UndertowRequestBodyReader.readBody(exchange);
+
+            TransferCommand transferCommand = objectMapper.readValue(requestBody, TransferCommand.class);
 
             if (transferCommand.getAmount() > 0) {
                 result = handleLogic(transferCommand);
